@@ -1,4 +1,25 @@
-const API_URL = import.meta.env.VITE_API_URL ?? '/api'
+// API URL configuration
+const getApiUrl = () => {
+  // Check for environment variable first
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+  
+  // In browser, construct API URL based on current host
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname
+    // If running on sandbox, use the API port URL
+    if (host.includes('sandbox')) {
+      return window.location.origin.replace('5173', '3000')
+    }
+    // Local development
+    return 'http://localhost:3000'
+  }
+  
+  return 'http://localhost:3000'
+}
+
+const API_URL = getApiUrl()
 
 export class ApiError extends Error {
   constructor(
@@ -28,9 +49,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 export const api = {
   // Auth
   async getMe() {
-    const response = await fetch(`${API_URL}/auth/me`, {
-      credentials: 'include',
-    })
+    const response = await fetch(`${API_URL}/auth/me`)
     return handleResponse<{
       id: string
       email: string
@@ -43,7 +62,7 @@ export const api = {
   async logout() {
     const response = await fetch(`${API_URL}/auth/logout`, {
       method: 'POST',
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
     })
     return handleResponse<void>(response)
   },
@@ -51,7 +70,7 @@ export const api = {
   // Conversations
   async getConversations() {
     const response = await fetch(`${API_URL}/chat/conversations`, {
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
     })
     return handleResponse<
       Array<{
@@ -64,7 +83,7 @@ export const api = {
 
   async getConversation(id: string) {
     const response = await fetch(`${API_URL}/chat/conversations/${id}`, {
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
     })
     return handleResponse<{
       conversation: {
@@ -85,7 +104,7 @@ export const api = {
   async createConversation() {
     const response = await fetch(`${API_URL}/chat/conversations`, {
       method: 'POST',
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
     })
     return handleResponse<{
       id: string
@@ -96,7 +115,7 @@ export const api = {
   async deleteConversation(id: string) {
     const response = await fetch(`${API_URL}/chat/conversations/${id}`, {
       method: 'DELETE',
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
     })
     return handleResponse<void>(response)
   },
@@ -110,7 +129,7 @@ export const api = {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
       body: JSON.stringify({ content }),
     })
   },
@@ -118,7 +137,7 @@ export const api = {
   // User
   async getUsage() {
     const response = await fetch(`${API_URL}/user/usage`, {
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
     })
     return handleResponse<{
       currentPeriod: { start: string; end: string }
@@ -136,7 +155,7 @@ export const api = {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
       body: JSON.stringify(preferences),
     })
     return handleResponse<Record<string, unknown>>(response)
@@ -145,7 +164,7 @@ export const api = {
   async deleteAccount() {
     const response = await fetch(`${API_URL}/user/data`, {
       method: 'DELETE',
-      credentials: 'include',
+      // credentials: 'include', // Disabled for demo
     })
     return handleResponse<void>(response)
   },

@@ -36,7 +36,15 @@ export function useAuth() {
   })
 
   const login = () => {
-    window.location.href = '/api/auth/google'
+    // Demo mode - auto-login without OAuth
+    setUser({
+      id: 'demo-user-123',
+      email: 'demo@assistant.ai',
+      name: 'Demo User',
+      tier: 'solo',
+      preferences: {},
+    })
+    window.location.href = '/'
   }
 
   const logout = () => {
