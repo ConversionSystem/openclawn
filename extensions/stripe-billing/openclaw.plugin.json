@@ -1,0 +1,93 @@
+{
+  "id": "stripe-billing",
+  "name": "Stripe Billing",
+  "description": "Subscription management, usage tracking, and tier enforcement for hosted OpenClaw deployments. Enables premium pricing with Solo ($39), Pro ($79), and Business ($149) tiers.",
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "stripeSecretKey": {
+        "type": "string",
+        "description": "Stripe secret API key (sk_live_... or sk_test_...)"
+      },
+      "stripeWebhookSecret": {
+        "type": "string",
+        "description": "Stripe webhook signing secret (whsec_...)"
+      },
+      "stripePublishableKey": {
+        "type": "string",
+        "description": "Stripe publishable key for client-side (pk_live_... or pk_test_...)"
+      },
+      "tiers": {
+        "type": "object",
+        "description": "Subscription tier configuration",
+        "properties": {
+          "solo": {
+            "type": "object",
+            "properties": {
+              "priceId": { "type": "string", "description": "Stripe Price ID for Solo tier" },
+              "messagesPerMonth": { "type": "number", "default": 1000 },
+              "memoryDays": { "type": "number", "default": 7 },
+              "channels": { "type": "number", "default": 2, "description": "Web + 1 channel" },
+              "models": {
+                "type": "array",
+                "items": { "type": "string" },
+                "default": ["anthropic/claude-3-5-haiku", "anthropic/claude-3-5-sonnet"]
+              }
+            }
+          },
+          "pro": {
+            "type": "object",
+            "properties": {
+              "priceId": { "type": "string", "description": "Stripe Price ID for Pro tier" },
+              "messagesPerMonth": { "type": "number", "default": 3000 },
+              "memoryDays": { "type": "number", "default": 30 },
+              "channels": { "type": "number", "default": 5, "description": "All channels" },
+              "models": {
+                "type": "array",
+                "items": { "type": "string" },
+                "default": ["anthropic/claude-3-5-haiku", "anthropic/claude-3-5-sonnet", "anthropic/claude-3-opus"]
+              }
+            }
+          },
+          "business": {
+            "type": "object",
+            "properties": {
+              "priceId": { "type": "string", "description": "Stripe Price ID for Business tier" },
+              "messagesPerMonth": { "type": "number", "default": 10000 },
+              "memoryDays": { "type": "number", "default": 90 },
+              "channels": { "type": "number", "default": -1, "description": "-1 = unlimited" },
+              "models": {
+                "type": "array",
+                "items": { "type": "string" },
+                "default": ["anthropic/claude-3-5-haiku", "anthropic/claude-3-5-sonnet", "anthropic/claude-3-opus"]
+              },
+              "teamSeats": { "type": "number", "default": 5 }
+            }
+          }
+        }
+      },
+      "trialDays": {
+        "type": "number",
+        "default": 7,
+        "description": "Number of days for free trial"
+      },
+      "trialTier": {
+        "type": "string",
+        "default": "pro",
+        "description": "Which tier to grant during trial (pro recommended)"
+      },
+      "databaseUrl": {
+        "type": "string",
+        "description": "PostgreSQL connection URL for subscription data (optional, uses OpenClaw store if not set)"
+      },
+      "webhookPath": {
+        "type": "string",
+        "default": "/stripe/webhook",
+        "description": "Path for Stripe webhook endpoint"
+      }
+    },
+    "required": ["stripeSecretKey", "stripeWebhookSecret"]
+  }
+}

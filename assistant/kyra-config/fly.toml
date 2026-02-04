@@ -1,0 +1,80 @@
+# =============================================================================
+# Kyra AI - Fly.io Deployment Configuration
+# =============================================================================
+# Deploy with: fly deploy
+# =============================================================================
+
+app = "kyra-ai"
+primary_region = "iad"  # US East (Washington DC)
+
+[build]
+  # Use Node.js 22
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  GATEWAY_PORT = "18789"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 80
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 18789
+
+  [[services.ports]]
+    port = 18789
+    handlers = ["tls", "http"]
+
+  [[services.tcp_checks]]
+    grace_period = "30s"
+    interval = "15s"
+    restart_limit = 3
+    timeout = "10s"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
+
+# Scaling configuration
+[deploy]
+  release_command = "echo 'Deployment starting...'"
+  strategy = "rolling"
+
+# Health checks
+[[services.http_checks]]
+  grace_period = "30s"
+  interval = "15s"
+  method = "GET"
+  path = "/health"
+  protocol = "http"
+  restart_limit = 3
+  timeout = "10s"
+
+# Secrets to set (use `fly secrets set KEY=value`):
+# - ANTHROPIC_API_KEY
+# - OPENAI_API_KEY
+# - GOOGLE_API_KEY
+# - STRIPE_SECRET_KEY
+# - STRIPE_WEBHOOK_SECRET
+# - STRIPE_PRICE_SOLO
+# - STRIPE_PRICE_PRO
+# - STRIPE_PRICE_BUSINESS
+# - TELEGRAM_BOT_TOKEN
+# - DATABASE_URL
+# - REDIS_URL
+# - GATEWAY_TOKEN
+# - SESSION_SECRET
+# - ENCRYPTION_KEY

@@ -1,0 +1,10 @@
+{
+  "name": "@kyra/personality",
+  "version": "1.0.0",
+  "description": "Kyra AI personality and system prompt extension",
+  "type": "module",
+  "main": "index.ts",
+  "devDependencies": {
+    "openclaw": "workspace:*"
+  }
+}
