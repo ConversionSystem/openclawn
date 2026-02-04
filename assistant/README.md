@@ -1,174 +1,192 @@
-# AI Personal Assistant MVP
+# ✨ Kyra - Your Intelligent AI Companion
 
-A clean, streamlined AI personal assistant with 84%+ gross margins.
+A premium AI personal assistant with multi-channel support, powered by advanced AI models and built on the OpenClaw platform.
 
-## Quick Start
+## Brand
 
-```bash
-# Install dependencies
-pnpm install
+| Element | Value |
+|---------|-------|
+| **Name** | Kyra (KY-rah) |
+| **Tagline** | Your Intelligent Companion |
+| **Wake Phrase** | "Hey Kyra" |
 
-# Set up environment
-cp .env.example .env
-# Edit .env with your credentials
+See [KYRA_BRAND_GUIDE.md](./KYRA_BRAND_GUIDE.md) for complete brand guidelines.
 
-# Run database migrations
-pnpm db:push
-
-# Start development
-pnpm dev
-```
+---
 
 ## Architecture
 
+**Built on OpenClaw for 77% faster time-to-market.**
+
+| Approach | Timeline | Hours | Savings |
+|----------|----------|-------|---------|
+| Custom Build | 10 weeks | 622h | - |
+| **OpenClaw Extension** | **4 weeks** | **144h** | **77%** |
+
+See [OPENCLAW_MVP_PIVOT.md](./OPENCLAW_MVP_PIVOT.md) for the full decision rationale.
+
+---
+
+## Features
+
+### What Kyra Offers
+
+- ✨ **Always Available** - Chat via web, Telegram, or your favorite platform
+- 🧠 **Smart & Adaptive** - Powered by Claude, GPT-4, and Gemini
+- 💭 **Remembers You** - Persistent memory across conversations
+- 🔒 **Privacy First** - Your data stays yours
+- 📱 **Multi-Channel** - One AI, everywhere you are
+
+### Built-in (via OpenClaw)
+
+- ✅ **WebChat** - Beautiful web interface
+- ✅ **Telegram** - Native channel integration
+- ✅ **AI Orchestration** - Model routing & failover
+- ✅ **Sessions** - Memory, context, compaction
+- ✅ **Multi-Provider** - Anthropic, OpenAI, Google, Ollama
+
+### Custom Extension
+
+- ✅ **Stripe Billing** - Subscription management & usage tracking
+
+---
+
+## Pricing
+
+| Tier | Price | Messages/mo | Memory | Best For |
+|------|-------|-------------|--------|----------|
+| **Solo** | $39 | 1,000 | 7 days | Individuals |
+| **Pro** | $79 | 3,000 | 30 days | Power users |
+| **Business** | $149 | 10,000 | 90 days | Teams |
+
+**Target Gross Margin: 84%+**  
+**Break-even: ~15 users**
+
+---
+
+## Quick Start
+
+### 1. Deploy OpenClaw
+
+```bash
+# Install OpenClaw
+npm install -g openclaw@latest
+
+# Run onboarding wizard
+openclaw onboard --install-daemon
+
+# Deploy to Fly.io
+fly launch --name kyra-prod
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         INTERFACE LAYER                          │
-│                                                                  │
-│    ┌─────────────┐         ┌─────────────┐                      │
-│    │   WEB APP   │         │  TELEGRAM   │                      │
-│    │  (React)    │         │   (Future)  │                      │
-│    └──────┬──────┘         └──────┬──────┘                      │
-│           │                       │                              │
-└───────────┼───────────────────────┼──────────────────────────────┘
-            │                       │
-            └───────────┬───────────┘
-                        │
-┌───────────────────────┼──────────────────────────────────────────┐
-│                       ▼                                          │
-│                  API GATEWAY                                     │
-│                   (Hono)                                         │
-│                                                                  │
-│    ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
-│    │   AUTH   │  │   CHAT   │  │   USER   │  │  HEALTH  │      │
-│    └────┬─────┘  └────┬─────┘  └────┬─────┘  └──────────┘      │
-│         │             │             │                            │
-│         └─────────────┼─────────────┘                            │
-│                       │                                          │
-│              ┌────────┴────────┐                                │
-│              │  AI ORCHESTRATOR │                                │
-│              │                  │                                │
-│              │ • Model routing  │                                │
-│              │ • Context mgmt   │                                │
-│              │ • Streaming      │                                │
-│              └────────┬─────────┘                                │
-│                       │                                          │
-└───────────────────────┼──────────────────────────────────────────┘
-                        │
-┌───────────────────────┼──────────────────────────────────────────┐
-│                       ▼                                          │
-│                  DATA LAYER                                      │
-│                                                                  │
-│    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │
-│    │   POSTGRES   │  │    REDIS     │  │   ANTHROPIC  │        │
-│    │   (Neon)     │  │  (Upstash)   │  │     API      │        │
-│    └──────────────┘  └──────────────┘  └──────────────┘        │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
+
+### 2. Configure Channels
+
+```bash
+# Enable WebChat
+openclaw config set channels.webchat.enabled true
+
+# Add Telegram
+openclaw config set channels.telegram.enabled true
+openclaw config set channels.telegram.botToken "$TELEGRAM_BOT_TOKEN"
 ```
+
+### 3. Install Billing Extension
+
+```bash
+# Install the extension
+openclaw extensions install ./extensions/stripe-billing
+
+# Configure Stripe
+openclaw config set extensions.stripe-billing.stripeSecretKey "$STRIPE_SECRET_KEY"
+openclaw config set extensions.stripe-billing.stripeWebhookSecret "$STRIPE_WEBHOOK_SECRET"
+```
+
+### 4. Start Kyra
+
+```bash
+openclaw gateway run --port 18789 --verbose
+```
+
+---
 
 ## Project Structure
 
 ```
 assistant/
-├── apps/
-│   ├── api/                    # Backend API (Hono + Drizzle)
-│   │   └── src/
-│   │       ├── routes/         # API endpoints
-│   │       ├── services/       # Business logic
-│   │       │   ├── ai/         # AI orchestration
-│   │       │   ├── auth/       # Authentication
-│   │       │   └── billing/    # Stripe integration
-│   │       ├── middleware/     # Auth, rate limiting
-│   │       └── db/             # Database schema & queries
-│   │
-│   └── web/                    # Frontend (React + Vite)
-│       └── src/
-│           ├── components/     # UI components
-│           ├── hooks/          # React hooks
-│           ├── stores/         # Zustand stores
-│           └── pages/          # Page components
-│
-├── packages/
-│   └── shared/                 # Shared types & utilities
-│
-└── infra/                      # Docker & deployment configs
+├── README.md                    # This file
+├── KYRA_BRAND_GUIDE.md         # Brand guidelines
+├── OPENCLAW_MVP_PIVOT.md       # Architecture decision
+├── IMPLEMENTATION_ROADMAP_V2.md # 4-week roadmap
+└── NAME_RESEARCH.md            # Naming research
+
+extensions/stripe-billing/
+├── package.json                # Dependencies
+├── openclaw.plugin.json        # Plugin config
+├── index.ts                    # Registration
+├── README.md                   # Extension docs
+└── src/
+    ├── types.ts                # TypeScript types
+    ├── stripe-service.ts       # Stripe API wrapper
+    ├── subscription-tool.ts    # Billing agent tool
+    ├── usage-tool.ts           # Usage statistics tool
+    ├── tier-middleware.ts      # Rate limiting
+    └── webhook-handler.ts      # Webhook processing
+
+demo/
+└── index.html                  # Interactive demo
 ```
 
-## Tech Stack
+---
 
-| Layer | Technology | Why |
-|-------|------------|-----|
-| Frontend | React 18, Vite, Tailwind | Fast, modern, great DX |
-| Backend | Hono, Node.js | Lightweight, fast, edge-ready |
-| Database | PostgreSQL (Neon) | Reliable, serverless |
-| Cache | Redis (Upstash) | Sessions, rate limiting |
-| AI | Anthropic Claude | Best reasoning, good streaming |
-| Auth | Google OAuth | Covers 70%+ of users |
-| Payments | Stripe | Industry standard |
-| Deployment | Fly.io | Simple, global |
+## Documentation
 
-## Pricing Tiers
+| Document | Purpose |
+|----------|---------|
+| [KYRA_BRAND_GUIDE.md](./KYRA_BRAND_GUIDE.md) | Brand identity & guidelines |
+| [OPENCLAW_MVP_PIVOT.md](./OPENCLAW_MVP_PIVOT.md) | Architecture decision |
+| [IMPLEMENTATION_ROADMAP_V2.md](./IMPLEMENTATION_ROADMAP_V2.md) | 4-week implementation plan |
+| [NAME_RESEARCH.md](./NAME_RESEARCH.md) | Naming research & alternatives |
 
-| Tier | Price | Messages/mo | Features |
-|------|-------|-------------|----------|
-| Solo | $39 | 1,000 | Web + 1 channel, 7-day memory |
-| Pro | $79 | 3,000 | + All channels, 30-day memory |
-| Business | $149 | 10,000 | + Team features, 90-day memory |
+---
 
-**Target Gross Margin: 84%+**
+## Timeline
 
-## Development
+| Phase | Week | Deliverable |
+|-------|------|-------------|
+| Setup | 1 | OpenClaw deployment, channels configured |
+| Billing | 1-2 | Stripe extension complete |
+| Integration | 2-3 | End-to-end testing |
+| Launch | 3-4 | Beta with 10 users |
 
-### Prerequisites
+---
 
-- Node.js 22+
-- pnpm 9+
-- PostgreSQL (or Neon account)
-- Anthropic API key
-- Google OAuth credentials
-
-### Environment Variables
-
-See `.env.example` for all required variables.
-
-### Commands
+## Commands Reference
 
 ```bash
-# Development
-pnpm dev              # Start all services
-pnpm dev --filter api # Start API only
-pnpm dev --filter web # Start web only
+# Gateway
+openclaw gateway run --port 18789
 
-# Database
-pnpm db:generate      # Generate migrations
-pnpm db:push          # Push schema to DB
-pnpm db:studio        # Open Drizzle Studio
+# Channels
+openclaw channels status --probe
+openclaw channels add telegram
 
-# Build
-pnpm build            # Build all packages
-pnpm typecheck        # Type check
-pnpm lint             # Lint code
-pnpm test             # Run tests
+# Extensions
+openclaw extensions list
+openclaw extensions install <path>
+
+# Diagnostics
+openclaw doctor
+openclaw logs --follow
 ```
 
-## Deployment
-
-### Fly.io (Recommended)
-
-```bash
-cd infra
-fly launch
-fly secrets set DATABASE_URL=... ANTHROPIC_API_KEY=...
-fly deploy
-```
-
-### Docker
-
-```bash
-docker-compose up -d
-```
+---
 
 ## License
 
 Private - All rights reserved.
+
+---
+
+<p align="center">
+  <strong>✨ Kyra - Your Intelligent Companion ✨</strong>
+</p>
