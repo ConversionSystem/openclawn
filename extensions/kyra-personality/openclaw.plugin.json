@@ -1,0 +1,49 @@
+{
+  "name": "@kyra/personality",
+  "version": "1.0.0",
+  "description": "Kyra AI - Your Intelligent Companion personality and system prompt",
+  "author": "Kyra AI",
+  "license": "MIT",
+  "openclaw": {
+    "minVersion": "2024.0.0"
+  },
+  "config": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "assistantName": {
+          "type": "string",
+          "default": "Kyra",
+          "description": "The name of the assistant"
+        },
+        "tagline": {
+          "type": "string",
+          "default": "Your Intelligent Companion",
+          "description": "The assistant's tagline"
+        },
+        "personality": {
+          "type": "string",
+          "enum": ["friendly", "professional", "casual", "formal"],
+          "default": "friendly",
+          "description": "The assistant's personality style"
+        },
+        "welcomeMessage": {
+          "type": "string",
+          "default": "Hi! I'm Kyra, your intelligent companion. How can I help you today?",
+          "description": "Welcome message for new conversations"
+        },
+        "enableCommands": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable slash commands like /status, /help"
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "systemPrompt": true,
+    "messagePreprocessor": true,
+    "conversationHooks": true
+  },
+  "extensions": "./index.ts"
+}

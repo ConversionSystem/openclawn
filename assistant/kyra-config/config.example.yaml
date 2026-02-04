@@ -1,0 +1,216 @@
+# Kyra AI Configuration
+# Copy this file to config.yaml and fill in your values
+
+# =============================================================================
+# CORE SETTINGS
+# =============================================================================
+
+app:
+  name: "Kyra"
+  tagline: "Your Intelligent Companion"
+  version: "1.0.0"
+  environment: "development"  # development | staging | production
+
+# =============================================================================
+# AI PROVIDER CONFIGURATION
+# =============================================================================
+
+ai:
+  # Primary provider (used for most requests)
+  primary:
+    provider: "anthropic"
+    model: "claude-sonnet-4-20250514"
+    maxTokens: 4096
+  
+  # Fallback providers (used if primary fails)
+  fallbacks:
+    - provider: "openai"
+      model: "gpt-4o"
+      maxTokens: 4096
+    - provider: "google"
+      model: "gemini-1.5-pro"
+      maxTokens: 4096
+  
+  # Model routing rules
+  routing:
+    # Use faster models for simple queries
+    simple_queries:
+      provider: "anthropic"
+      model: "claude-3-haiku-20240307"
+    # Use powerful models for complex tasks
+    complex_tasks:
+      provider: "anthropic"
+      model: "claude-sonnet-4-20250514"
+    # Use coding-optimized for code tasks
+    coding:
+      provider: "anthropic"
+      model: "claude-sonnet-4-20250514"
+
+# =============================================================================
+# API KEYS (Use environment variables in production!)
+# =============================================================================
+
+providers:
+  anthropic:
+    apiKey: "${ANTHROPIC_API_KEY}"
+  openai:
+    apiKey: "${OPENAI_API_KEY}"
+  google:
+    apiKey: "${GOOGLE_API_KEY}"
+
+# =============================================================================
+# STRIPE BILLING
+# =============================================================================
+
+stripe:
+  secretKey: "${STRIPE_SECRET_KEY}"
+  webhookSecret: "${STRIPE_WEBHOOK_SECRET}"
+  
+  # Trial configuration
+  trial:
+    enabled: true
+    days: 7
+    messagesLimit: 50
+    requireCard: true
+  
+  # Pricing tiers
+  tiers:
+    solo:
+      name: "Solo"
+      priceId: "${STRIPE_PRICE_SOLO}"      # e.g., price_xxxxx
+      priceCents: 3900                       # $39.00
+      messagesPerMonth: 1000
+      memoryDays: 7
+      maxChannels: 2
+      features:
+        - "1,000 messages/month"
+        - "7-day conversation memory"
+        - "2 channels (Web + Telegram)"
+        - "Email support"
+    
+    pro:
+      name: "Pro"
+      priceId: "${STRIPE_PRICE_PRO}"        # e.g., price_xxxxx
+      priceCents: 7900                       # $79.00
+      messagesPerMonth: 3000
+      memoryDays: 30
+      maxChannels: 5
+      features:
+        - "3,000 messages/month"
+        - "30-day conversation memory"
+        - "5 channels"
+        - "Priority support"
+        - "Advanced model access"
+    
+    business:
+      name: "Business"
+      priceId: "${STRIPE_PRICE_BUSINESS}"   # e.g., price_xxxxx
+      priceCents: 14900                      # $149.00
+      messagesPerMonth: 10000
+      memoryDays: 90
+      maxChannels: -1                        # Unlimited
+      features:
+        - "10,000 messages/month"
+        - "90-day conversation memory"
+        - "Unlimited channels"
+        - "Dedicated support"
+        - "Custom integrations"
+        - "Team features"
+
+# =============================================================================
+# CHANNELS
+# =============================================================================
+
+channels:
+  webchat:
+    enabled: true
+    cors:
+      origins:
+        - "https://kyra.ai"
+        - "https://app.kyra.ai"
+        - "http://localhost:3000"
+  
+  telegram:
+    enabled: true
+    botToken: "${TELEGRAM_BOT_TOKEN}"
+    botUsername: "KyraAIBot"
+    allowedUpdates:
+      - "message"
+      - "callback_query"
+
+# =============================================================================
+# GATEWAY CONFIGURATION
+# =============================================================================
+
+gateway:
+  port: 18789
+  host: "0.0.0.0"
+  mode: "local"  # local | remote
+  
+  # Authentication
+  auth:
+    mode: "token"
+    token: "${GATEWAY_TOKEN}"
+  
+  # Rate limiting
+  rateLimit:
+    enabled: true
+    windowMs: 60000        # 1 minute
+    maxRequests: 60        # 60 requests per minute
+  
+  # CORS
+  cors:
+    enabled: true
+    origins:
+      - "*"
+
+# =============================================================================
+# DATABASE (for production - using PostgreSQL)
+# =============================================================================
+
+database:
+  # For development, in-memory storage is used
+  # For production, configure PostgreSQL:
+  provider: "memory"  # memory | postgres
+  
+  # PostgreSQL configuration (production)
+  postgres:
+    connectionString: "${DATABASE_URL}"
+    ssl: true
+    poolSize: 10
+
+# =============================================================================
+# REDIS (for caching and sessions)
+# =============================================================================
+
+redis:
+  enabled: false  # Enable for production
+  url: "${REDIS_URL}"
+
+# =============================================================================
+# LOGGING & MONITORING
+# =============================================================================
+
+logging:
+  level: "info"  # debug | info | warn | error
+  format: "json"  # json | pretty
+  
+monitoring:
+  enabled: false
+  sentry:
+    dsn: "${SENTRY_DSN}"
+
+# =============================================================================
+# SECURITY
+# =============================================================================
+
+security:
+  # Session configuration
+  session:
+    secret: "${SESSION_SECRET}"
+    maxAge: 604800000  # 7 days in ms
+  
+  # Encryption for stored data
+  encryption:
+    enabled: true
+    key: "${ENCRYPTION_KEY}"
