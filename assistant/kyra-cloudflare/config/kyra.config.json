@@ -1,0 +1,159 @@
+{
+  "$schema": "https://openclaw.ai/schemas/config.json",
+  "version": "1.0",
+  
+  "assistant": {
+    "name": "Kyra",
+    "tagline": "Your Intelligent Companion",
+    "personality": "warm_professional",
+    "avatar": "/assets/kyra-avatar.png"
+  },
+  
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "cors": {
+      "enabled": true,
+      "origins": ["*"],
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      "headers": ["Content-Type", "Authorization", "X-Gateway-Token"]
+    },
+    "rateLimit": {
+      "enabled": true,
+      "windowMs": 60000,
+      "max": 60
+    }
+  },
+  
+  "agent": {
+    "model": {
+      "primary": "anthropic/claude-3-5-sonnet-20241022",
+      "fallback": [
+        "openai/gpt-4o",
+        "google/gemini-1.5-pro"
+      ]
+    },
+    "maxTokens": 4096,
+    "temperature": 0.7,
+    "systemPrompt": "You are Kyra, an intelligent AI companion. You are warm, helpful, and professional. You remember context from previous conversations and adapt to the user's needs. Always be concise but thorough in your responses."
+  },
+  
+  "memory": {
+    "enabled": true,
+    "maxMessages": 100,
+    "compaction": {
+      "enabled": true,
+      "threshold": 50,
+      "strategy": "summarize"
+    },
+    "persistence": {
+      "type": "r2",
+      "bucket": "kyra-data",
+      "prefix": "memory/"
+    }
+  },
+  
+  "channels": {
+    "webchat": {
+      "enabled": true,
+      "theme": "kyra",
+      "welcomeMessage": "Hi! I'm Kyra, your intelligent companion. How can I help you today?",
+      "placeholder": "Type your message..."
+    },
+    "telegram": {
+      "enabled": true,
+      "commands": [
+        {"command": "start", "description": "Start a conversation"},
+        {"command": "help", "description": "Get help"},
+        {"command": "status", "description": "Check your subscription status"},
+        {"command": "usage", "description": "Check your usage"},
+        {"command": "upgrade", "description": "Upgrade your plan"}
+      ]
+    },
+    "discord": {
+      "enabled": false,
+      "prefix": "!kyra"
+    },
+    "slack": {
+      "enabled": false,
+      "appMentionOnly": true
+    }
+  },
+  
+  "extensions": {
+    "stripe-billing": {
+      "enabled": true,
+      "webhookPath": "/webhooks/stripe",
+      "tiers": {
+        "trial": {
+          "priceId": "",
+          "messagesPerMonth": 100,
+          "memoryDays": 3,
+          "channels": 1,
+          "features": ["WebChat only", "Basic memory", "Standard support"]
+        },
+        "solo": {
+          "priceId": "price_solo_REPLACE_ME",
+          "price": 39,
+          "messagesPerMonth": 1000,
+          "memoryDays": 7,
+          "channels": 2,
+          "features": ["WebChat + Telegram", "7-day memory", "Priority support"]
+        },
+        "pro": {
+          "priceId": "price_pro_REPLACE_ME",
+          "price": 79,
+          "messagesPerMonth": 3000,
+          "memoryDays": 30,
+          "channels": 5,
+          "features": ["All channels", "30-day memory", "Premium support", "API access"]
+        },
+        "business": {
+          "priceId": "price_business_REPLACE_ME",
+          "price": 149,
+          "messagesPerMonth": 10000,
+          "memoryDays": 90,
+          "channels": -1,
+          "features": ["Unlimited channels", "90-day memory", "Dedicated support", "Custom integrations"]
+        }
+      },
+      "trialDays": 7
+    },
+    "kyra-personality": {
+      "enabled": true,
+      "style": "warm_professional",
+      "greetings": [
+        "Hello! How can I help you today?",
+        "Hi there! What can I assist you with?",
+        "Welcome back! What's on your mind?"
+      ],
+      "farewell": [
+        "Take care! Feel free to reach out anytime.",
+        "Goodbye for now! I'll be here when you need me.",
+        "See you later! Have a great day!"
+      ]
+    }
+  },
+  
+  "security": {
+    "authentication": {
+      "required": true,
+      "methods": ["gateway_token", "cloudflare_access"]
+    },
+    "devicePairing": {
+      "enabled": true,
+      "maxDevices": 5
+    }
+  },
+  
+  "monitoring": {
+    "logging": {
+      "level": "info",
+      "format": "json"
+    },
+    "analytics": {
+      "enabled": true,
+      "events": ["message_sent", "message_received", "subscription_changed", "error"]
+    }
+  }
+}
