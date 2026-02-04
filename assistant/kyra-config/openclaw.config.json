@@ -1,0 +1,108 @@
+{
+  "$schema": "https://openclaw.ai/schemas/config.json",
+  "version": "1.0",
+  
+  "gateway": {
+    "port": 3000,
+    "bindHost": "0.0.0.0",
+    "publicUrl": "${KYRA_PUBLIC_URL:-https://kyra.example.com}",
+    "cors": {
+      "enabled": true,
+      "origins": ["*"]
+    }
+  },
+
+  "agent": {
+    "name": "Kyra",
+    "defaultModel": "anthropic/claude-3-5-sonnet-20241022",
+    "fallbackModels": [
+      "openai/gpt-4o",
+      "google/gemini-1.5-pro"
+    ],
+    "maxTokens": 4096,
+    "temperature": 0.7
+  },
+
+  "memory": {
+    "enabled": true,
+    "provider": "local",
+    "compaction": {
+      "enabled": true,
+      "threshold": 50,
+      "keepRecent": 10
+    }
+  },
+
+  "channels": {
+    "webchat": {
+      "enabled": true,
+      "title": "Kyra AI",
+      "subtitle": "Your Intelligent Companion",
+      "theme": {
+        "primaryColor": "#8B5CF6",
+        "secondaryColor": "#3B82F6"
+      }
+    },
+    "telegram": {
+      "enabled": "${TELEGRAM_ENABLED:-false}",
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "allowDM": true,
+      "webhookUrl": "${KYRA_PUBLIC_URL}/webhooks/telegram"
+    }
+  },
+
+  "extensions": {
+    "stripe-billing": {
+      "enabled": true,
+      "stripeSecretKey": "${STRIPE_SECRET_KEY}",
+      "stripeWebhookSecret": "${STRIPE_WEBHOOK_SECRET}",
+      "trialDays": 7,
+      "tiers": {
+        "solo": {
+          "priceId": "${STRIPE_PRICE_SOLO}",
+          "messagesPerMonth": 1000,
+          "memoryDays": 7,
+          "channels": 2
+        },
+        "pro": {
+          "priceId": "${STRIPE_PRICE_PRO}",
+          "messagesPerMonth": 3000,
+          "memoryDays": 30,
+          "channels": 5
+        },
+        "business": {
+          "priceId": "${STRIPE_PRICE_BUSINESS}",
+          "messagesPerMonth": 10000,
+          "memoryDays": 90,
+          "channels": -1
+        }
+      }
+    },
+    "kyra-personality": {
+      "enabled": true,
+      "assistantName": "Kyra",
+      "tagline": "Your Intelligent Companion",
+      "personality": "friendly",
+      "welcomeMessage": "Hi! I'm Kyra, your intelligent AI companion. How can I help you today? ✨",
+      "primaryColor": "#8B5CF6",
+      "enableGreeting": true
+    }
+  },
+
+  "security": {
+    "rateLimit": {
+      "enabled": true,
+      "maxRequests": 60,
+      "windowMs": 60000
+    },
+    "auth": {
+      "required": false,
+      "providers": ["token"]
+    }
+  },
+
+  "logging": {
+    "level": "${LOG_LEVEL:-info}",
+    "format": "json"
+  }
+}

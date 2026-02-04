@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kyra AI - Your Intelligent Companion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            kyra: {
+              purple: '#8B5CF6',
+              blue: '#3B82F6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    .pulse { animation: pulse 2s infinite; }
+    .typing-dots::after {
+      content: '';
+      animation: typing 1.5s infinite;
+    }
+    @keyframes typing {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+    .gradient-border {
+      background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+      padding: 2px;
+      border-radius: 1rem;
+    }
+    .gradient-border > * {
+      background: #1F2937;
+      border-radius: calc(1rem - 2px);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+  <div class="flex h-screen">
+    
+    <!-- Sidebar -->
+    <aside class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-gray-700">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-kyra-purple to-kyra-blue flex items-center justify-center">
+            <span class="text-xl">✨</span>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold">Kyra</h1>
+            <p class="text-xs text-gray-400">Your Intelligent Companion</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Channels Section -->
+      <div class="p-4 flex-1 overflow-y-auto">
+        <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Channels</h2>
+        <div class="space-y-2">
+          <div class="flex items-center gap-3 p-3 bg-kyra-purple/20 rounded-lg border border-kyra-purple/30 cursor-pointer">
+            <span class="w-2 h-2 bg-green-500 rounded-full pulse"></span>
+            <span class="text-sm">💬 WebChat</span>
+            <span class="ml-auto text-xs text-green-400 font-medium">Active</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 hover:bg-gray-700 rounded-lg cursor-pointer transition">
+            <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+            <span class="text-sm">📱 Telegram</span>
+            <span class="ml-auto text-xs text-yellow-400">Ready</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 hover:bg-gray-700 rounded-lg cursor-pointer transition opacity-50">
+            <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
+            <span class="text-sm">💬 Discord</span>
+            <span class="ml-auto text-xs text-gray-500">v1.1</span>
+          </div>
+        </div>
+        
+        <!-- Conversations -->
+        <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-3">Recent</h2>
+        <div class="space-y-1">
+          <div class="p-3 bg-gray-700/50 rounded-lg cursor-pointer border-l-2 border-kyra-purple">
+            <p class="text-sm font-medium truncate">Current Conversation</p>
+            <p class="text-xs text-gray-400 truncate">Active now</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Subscription Panel -->
+      <div class="p-4 border-t border-gray-700">
+        <div class="gradient-border">
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-semibold" id="tierName">Solo Plan</span>
+              <span class="text-xs bg-kyra-purple/30 text-kyra-purple px-2 py-1 rounded-full font-medium" id="tierPrice">$39/mo</span>
+            </div>
+            <div class="space-y-2">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-gray-400">Messages</span>
+                  <span id="usageText">150 / 1,000</span>
+                </div>
+                <div class="w-full bg-gray-600 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-kyra-purple to-kyra-blue h-2 rounded-full transition-all" id="usageBar" style="width: 15%"></div>
+                </div>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-400">Memory</span>
+                <span id="memoryText">7 days</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button onclick="showUpgrade()" class="w-full mt-3 px-4 py-2.5 bg-gradient-to-r from-kyra-purple to-kyra-blue rounded-lg text-sm font-semibold hover:opacity-90 transition">
+          Upgrade Plan
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Main Chat Area -->
+    <main class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="h-16 border-b border-gray-700 flex items-center justify-between px-6 bg-gray-800/50">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kyra-purple to-kyra-blue flex items-center justify-center">
+            <span class="text-lg">✨</span>
+          </div>
+          <div>
+            <h2 class="font-semibold">Kyra Assistant</h2>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+              <span class="text-green-400">Online</span>
+              <span class="text-gray-500">•</span>
+              <span class="text-gray-400" id="modelName">Claude 3.5 Sonnet</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="p-2 hover:bg-gray-700 rounded-lg transition" title="Settings">⚙️</button>
+          <button class="p-2 hover:bg-gray-700 rounded-lg transition" title="Clear chat" onclick="clearChat()">🗑️</button>
+        </div>
+      </header>
+      
+      <!-- Messages Container -->
+      <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-6">
+        <!-- Welcome Message -->
+        <div class="flex gap-4 fade-in">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kyra-purple to-kyra-blue flex items-center justify-center shrink-0">
+            <span>✨</span>
+          </div>
+          <div class="bg-gray-800 rounded-2xl rounded-tl-none px-5 py-4 max-w-2xl">
+            <p class="text-gray-100 leading-relaxed">
+              Hi! I'm <strong>Kyra</strong>, your intelligent AI companion. ✨
+            </p>
+            <p class="text-gray-300 mt-2 leading-relaxed">
+              I'm here to help you with questions, research, writing, coding, and more. 
+              I remember our conversations and learn your preferences over time.
+            </p>
+            <div class="mt-4 p-3 bg-gray-700/50 rounded-lg">
+              <p class="text-sm font-medium text-kyra-purple mb-2">Quick Commands:</p>
+              <div class="grid grid-cols-2 gap-2 text-sm text-gray-300">
+                <span class="cursor-pointer hover:text-white" onclick="sendCommand('/help')">📚 /help</span>
+                <span class="cursor-pointer hover:text-white" onclick="sendCommand('/status')">📊 /status</span>
+                <span class="cursor-pointer hover:text-white" onclick="sendCommand('/about')">✨ /about</span>
+                <span class="cursor-pointer hover:text-white" onclick="sendCommand('/upgrade')">⬆️ /upgrade</span>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-3">Just now</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Input Area -->
+      <div class="border-t border-gray-700 p-4 bg-gray-800/50">
+        <div class="max-w-4xl mx-auto">
+          <div class="flex gap-3">
+            <div class="flex-1 relative">
+              <input 
+                type="text" 
+                id="messageInput"
+                placeholder="Message Kyra..." 
+                class="w-full bg-gray-700 border border-gray-600 rounded-xl px-5 py-3.5 pr-24 focus:outline-none focus:border-kyra-purple focus:ring-1 focus:ring-kyra-purple transition"
+                onkeypress="handleKeyPress(event)"
+              >
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
+                <button class="p-2 hover:bg-gray-600 rounded-lg transition" title="Attach file">📎</button>
+                <button class="p-2 hover:bg-gray-600 rounded-lg transition" title="Voice">🎤</button>
+              </div>
+            </div>
+            <button 
+              onclick="sendMessage()"
+              class="px-6 py-3.5 bg-gradient-to-r from-kyra-purple to-kyra-blue rounded-xl font-semibold hover:opacity-90 transition flex items-center gap-2"
+            >
+              Send
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </button>
+          </div>
+          <div class="flex justify-between items-center mt-2 text-xs text-gray-500">
+            <div class="flex items-center gap-3">
+              <span>Powered by OpenClaw</span>
+              <span>•</span>
+              <span id="contextInfo">7-day memory</span>
+            </div>
+            <span id="remainingMessages">850 messages remaining</span>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Right Panel - System Status -->
+    <aside class="w-80 bg-gray-800 border-l border-gray-700 hidden xl:flex flex-col">
+      <div class="p-4 border-b border-gray-700">
+        <h2 class="font-semibold">System Status</h2>
+      </div>
+      <div class="p-4 space-y-4 flex-1 overflow-y-auto">
+        
+        <!-- OpenClaw Gateway -->
+        <div class="bg-gray-700/50 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium">OpenClaw Gateway</span>
+            <span class="flex items-center gap-1 text-xs text-green-400">
+              <span class="w-2 h-2 bg-green-500 rounded-full pulse"></span>
+              Online
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
+            <span>Sessions:</span><span class="text-white">Active</span>
+            <span>Memory:</span><span class="text-white">Enabled</span>
+            <span>Routing:</span><span class="text-white">Auto</span>
+          </div>
+        </div>
+        
+        <!-- AI Models -->
+        <div class="bg-gray-700/50 rounded-lg p-4">
+          <p class="text-sm font-medium mb-3">AI Models</p>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span>Claude 3.5 Sonnet</span>
+              </div>
+              <span class="text-kyra-purple font-medium">Primary</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
+                <span>GPT-4o</span>
+              </div>
+              <span class="text-gray-500">Fallback</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
+                <span>Gemini 1.5 Pro</span>
+              </div>
+              <span class="text-gray-500">Fallback</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Extensions -->
+        <div class="bg-gray-700/50 rounded-lg p-4">
+          <p class="text-sm font-medium mb-3">Active Extensions</p>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span>stripe-billing</span>
+              <span class="text-green-400">✓ Active</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>kyra-personality</span>
+              <span class="text-green-400">✓ Active</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>telegram</span>
+              <span class="text-yellow-400">⚡ Ready</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pricing Tiers -->
+        <div class="bg-gradient-to-br from-kyra-purple/10 to-kyra-blue/10 rounded-lg p-4 border border-kyra-purple/20">
+          <p class="text-sm font-medium mb-3">Pricing</p>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-xs p-2 bg-gray-800/50 rounded border-l-2 border-kyra-purple">
+              <div>
+                <p class="font-medium">Solo</p>
+                <p class="text-gray-500">1K msgs • 7d</p>
+              </div>
+              <span class="font-bold">$39</span>
+            </div>
+            <div class="flex justify-between items-center text-xs p-2 bg-gray-800/50 rounded">
+              <div>
+                <p class="font-medium">Pro</p>
+                <p class="text-gray-500">3K msgs • 30d</p>
+              </div>
+              <span class="font-bold">$79</span>
+            </div>
+            <div class="flex justify-between items-center text-xs p-2 bg-gray-800/50 rounded">
+              <div>
+                <p class="font-medium">Business</p>
+                <p class="text-gray-500">10K msgs • 90d</p>
+              </div>
+              <span class="font-bold">$149</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="p-4 border-t border-gray-700 text-center">
+        <p class="text-xs text-gray-500">Kyra AI v1.0</p>
+        <p class="text-xs text-gray-600 mt-1">Built on OpenClaw</p>
+      </div>
+    </aside>
+  </div>
+  
+  <!-- Upgrade Modal -->
+  <div id="upgradeModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+    <div class="bg-gray-800 rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-700">
+      <h3 class="text-xl font-bold mb-4">Upgrade Your Plan</h3>
+      <div class="space-y-3">
+        <div class="p-4 rounded-lg border border-gray-600 hover:border-kyra-purple cursor-pointer transition">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-semibold">Solo</p>
+              <p class="text-sm text-gray-400">1,000 messages • 7-day memory</p>
+            </div>
+            <span class="text-xl font-bold">$39<span class="text-sm font-normal text-gray-400">/mo</span></span>
+          </div>
+        </div>
+        <div class="p-4 rounded-lg border-2 border-kyra-purple bg-kyra-purple/10 cursor-pointer">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-semibold">Pro <span class="text-xs bg-kyra-purple px-2 py-0.5 rounded-full ml-2">Popular</span></p>
+              <p class="text-sm text-gray-400">3,000 messages • 30-day memory</p>
+            </div>
+            <span class="text-xl font-bold">$79<span class="text-sm font-normal text-gray-400">/mo</span></span>
+          </div>
+        </div>
+        <div class="p-4 rounded-lg border border-gray-600 hover:border-kyra-purple cursor-pointer transition">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-semibold">Business</p>
+              <p class="text-sm text-gray-400">10,000 messages • 90-day memory</p>
+            </div>
+            <span class="text-xl font-bold">$149<span class="text-sm font-normal text-gray-400">/mo</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="hideUpgrade()" class="flex-1 px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition">Cancel</button>
+        <button class="flex-1 px-4 py-2 bg-gradient-to-r from-kyra-purple to-kyra-blue rounded-lg font-semibold hover:opacity-90 transition">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Kyra AI Demo - Simulating OpenClaw Integration
+    const messagesDiv = document.getElementById('messages');
+    const input = document.getElementById('messageInput');
+    let messageCount = 150;
+    let isTyping = false;
+
+    // Kyra's responses based on context
+    const kyraResponses = {
+      greeting: [
+        "Hello! How can I help you today? ✨",
+        "Hi there! I'm ready to assist you with whatever you need.",
+        "Hey! Great to see you. What would you like to work on?",
+      ],
+      help: `📚 **Kyra Help**
+
+I'm Kyra, your intelligent AI companion. Here's what I can help with:
+
+**Capabilities:**
+• 💬 Answer questions and research topics
+• ✍️ Write, edit, and improve content
+• 📊 Analyze information and data
+• 💻 Help with coding and technical tasks
+• 🎨 Brainstorm ideas and creative projects
+• 📚 Explain concepts and help you learn
+
+**Commands:**
+• \`/help\` - Show this help message
+• \`/status\` - Check your subscription and usage
+• \`/about\` - Learn about Kyra
+• \`/upgrade\` - See plan options
+
+Just send me a message and I'll do my best to help!`,
+      status: `📊 **Subscription Status**
+
+**Plan:** Solo
+**Status:** Active
+
+**Usage This Period:**
+• Messages: ${messageCount} / 1,000
+• Remaining: ${1000 - messageCount}
+
+**Memory:** 7 days
+**Period Ends:** March 4, 2026
+
+Use \`/upgrade\` to see plan options.`,
+      about: `✨ **About Kyra**
+
+**Kyra** - Your Intelligent Companion
+
+I'm an AI-powered personal assistant built to help you be more productive.
+
+**My Features:**
+• 🧠 Powered by Claude, GPT-4, and Gemini
+• 💬 Available on Web and Telegram
+• 🔒 Privacy-focused
+• 📱 Cross-platform sync
+
+**Built With:**
+• OpenClaw Gateway
+• Multi-model AI orchestration
+• Stripe billing integration
+
+GitHub: github.com/ConversionSystem/openclawn`,
+      upgrade: `⬆️ **Upgrade Your Plan**
+
+| Plan | Price | Messages | Memory |
+|------|-------|----------|--------|
+| **Solo** | $39/mo | 1,000 | 7 days |
+| **Pro** | $79/mo | 3,000 | 30 days |
+| **Business** | $149/mo | 10,000 | 90 days |
+
+Pro is our most popular plan! Upgrade for more messages and longer memory.
+
+Would you like me to help you upgrade?`,
+      general: [
+        "That's a great question! Let me think about that...\n\nBased on my understanding, {topic} is an interesting area. I can help you explore this further or dive into specific aspects.\n\nWhat would you like to know more about?",
+        "I'd be happy to help with that! ✨\n\nHere's what I can tell you: {topic} is something I can definitely assist with. Let me know if you'd like me to elaborate or take a different approach.",
+        "Interesting! Let me share my thoughts on this...\n\n{topic} - I have some ideas that might be helpful. Would you like me to go deeper into any particular aspect?",
+      ],
+      coding: "I can definitely help with coding! 💻\n\nWhat language or framework are you working with? I can assist with:\n• Writing code\n• Debugging issues\n• Explaining concepts\n• Code review\n• Architecture decisions\n\nJust share what you're working on!",
+      writing: "I'd love to help with your writing! ✍️\n\nI can assist with:\n• Drafting content\n• Editing and proofreading\n• Improving clarity and flow\n• Adjusting tone and style\n• Brainstorming ideas\n\nWhat are you working on?",
+    };
+
+    function addMessage(content, isUser = false, isMarkdown = false) {
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      // Process markdown-like formatting
+      let formattedContent = content;
+      if (isMarkdown) {
+        formattedContent = content
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`(.*?)`/g, '<code class="bg-gray-700 px-1 rounded">$1</code>')
+          .replace(/\n/g, '<br>')
+          .replace(/• /g, '<span class="text-kyra-purple">•</span> ');
+      }
+      
+      const messageHtml = isUser ? `
+        <div class="flex gap-4 justify-end fade-in">
+          <div class="bg-kyra-purple/20 border border-kyra-purple/30 rounded-2xl rounded-tr-none px-5 py-4 max-w-2xl">
+            <p class="text-gray-100">${formattedContent}</p>
+            <p class="text-xs text-gray-500 mt-2 text-right">${time}</p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
+            <span>👤</span>
+          </div>
+        </div>
+      ` : `
+        <div class="flex gap-4 fade-in">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kyra-purple to-kyra-blue flex items-center justify-center shrink-0">
+            <span>✨</span>
+          </div>
+          <div class="bg-gray-800 rounded-2xl rounded-tl-none px-5 py-4 max-w-2xl">
+            <p class="text-gray-100 leading-relaxed">${formattedContent}</p>
+            <p class="text-xs text-gray-500 mt-2">${time}</p>
+          </div>
+        </div>
+      `;
+      
+      messagesDiv.insertAdjacentHTML('beforeend', messageHtml);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function showTyping() {
+      isTyping = true;
+      const typingHtml = `
+        <div id="typing" class="flex gap-4 fade-in">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-kyra-purple to-kyra-blue flex items-center justify-center shrink-0">
+            <span>✨</span>
+          </div>
+          <div class="bg-gray-800 rounded-2xl rounded-tl-none px-5 py-4">
+            <p class="text-gray-400"><span class="typing-dots">Kyra is thinking</span></p>
+          </div>
+        </div>
+      `;
+      messagesDiv.insertAdjacentHTML('beforeend', typingHtml);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function hideTyping() {
+      isTyping = false;
+      const typing = document.getElementById('typing');
+      if (typing) typing.remove();
+    }
+
+    function updateUsage() {
+      messageCount++;
+      const percentage = (messageCount / 1000) * 100;
+      document.getElementById('usageBar').style.width = `${percentage}%`;
+      document.getElementById('usageText').textContent = `${messageCount} / 1,000`;
+      document.getElementById('remainingMessages').textContent = `${1000 - messageCount} messages remaining`;
+    }
+
+    function getKyraResponse(userMessage) {
+      const msg = userMessage.toLowerCase();
+      
+      // Commands
+      if (msg === '/help') return { text: kyraResponses.help, markdown: true };
+      if (msg === '/status') return { text: kyraResponses.status.replace('${messageCount}', messageCount), markdown: true };
+      if (msg === '/about') return { text: kyraResponses.about, markdown: true };
+      if (msg === '/upgrade') return { text: kyraResponses.upgrade, markdown: true };
+      
+      // Greetings
+      if (msg.match(/^(hi|hello|hey|good morning|good afternoon|good evening)/i)) {
+        return { text: kyraResponses.greeting[Math.floor(Math.random() * kyraResponses.greeting.length)], markdown: false };
+      }
+      
+      // Topics
+      if (msg.match(/cod(e|ing)|program|script|javascript|python|debug/i)) {
+        return { text: kyraResponses.coding, markdown: true };
+      }
+      if (msg.match(/writ(e|ing)|essay|article|content|edit/i)) {
+        return { text: kyraResponses.writing, markdown: true };
+      }
+      
+      // General response
+      const general = kyraResponses.general[Math.floor(Math.random() * kyraResponses.general.length)];
+      const topic = userMessage.length > 30 ? userMessage.substring(0, 30) + '...' : userMessage;
+      return { text: general.replace(/{topic}/g, `"${topic}"`), markdown: true };
+    }
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text || isTyping) return;
+      
+      addMessage(text, true);
+      input.value = '';
+      updateUsage();
+      
+      showTyping();
+      
+      const delay = 800 + Math.random() * 1200;
+      setTimeout(() => {
+        hideTyping();
+        const response = getKyraResponse(text);
+        addMessage(response.text, false, response.markdown);
+      }, delay);
+    }
+
+    function sendCommand(cmd) {
+      input.value = cmd;
+      sendMessage();
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
+
+    function clearChat() {
+      messagesDiv.innerHTML = '';
+      // Re-add welcome message
+      addMessage(`Hi! I'm <strong>Kyra</strong>, your intelligent AI companion. ✨<br><br>I'm here to help you with questions, research, writing, coding, and more.`, false, true);
+    }
+
+    function showUpgrade() {
+      document.getElementById('upgradeModal').classList.remove('hidden');
+    }
+
+    function hideUpgrade() {
+      document.getElementById('upgradeModal').classList.add('hidden');
+    }
+
+    // Initialize
+    input.focus();
+  </script>
+</body>
+</html>
